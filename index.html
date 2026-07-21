@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1020">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Project August">
+<link rel="manifest" href="manifest.json">
+<title>Project August</title>
+<style>
+:root{--bg:#0b1020;--card:#151b2f;--card2:#1d2540;--text:#f3f4f6;--muted:#9ca3af;--accent:#60a5fa;--good:#34d399;--danger:#f87171;--border:rgba(255,255,255,.08)}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(#0b1020,#0d1326);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh}
+.app{max-width:760px;margin:auto;padding:max(16px,env(safe-area-inset-top)) 14px max(90px,env(safe-area-inset-bottom))}
+header{display:flex;justify-content:space-between;gap:12px;margin-bottom:12px}h1{margin:0;font-size:28px}h2{font-size:19px;margin:0 0 10px}h3{font-size:16px;margin:0 0 6px}
+.muted,.small{color:var(--muted);font-size:13px}.count{background:var(--card2);border:1px solid var(--border);border-radius:16px;padding:10px 14px;text-align:center;min-width:110px}.count strong{display:block;font-size:25px;color:var(--accent)}
+.tabs{position:sticky;top:0;z-index:5;display:grid;grid-template-columns:repeat(5,1fr);gap:5px;padding:8px 0 10px;background:rgba(11,16,32,.94);backdrop-filter:blur(12px)}
+.tabs button{border:1px solid var(--border);border-radius:11px;padding:10px 3px;background:var(--card);color:var(--muted);font-size:11px}.tabs button.active{border-color:var(--accent);color:var(--text);background:#18233d}
+.tab{display:none}.tab.active{display:block}.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:15px;margin:0 0 12px}.grid{display:grid;gap:11px}.two{grid-template-columns:1fr 1fr}
+.metric{display:flex;justify-content:space-between;align-items:center;margin:10px 0}.metric strong{font-size:18px}.bar{height:10px;border-radius:999px;background:#0f1528;overflow:hidden}.bar div{height:100%;background:var(--accent);width:0}
+.score{font-size:42px;font-weight:800;color:var(--good)}label{display:block;color:var(--muted);font-size:13px;margin-bottom:5px}
+input,textarea{width:100%;border:1px solid var(--border);border-radius:12px;background:#0f1528;color:var(--text);padding:11px;font-size:16px}textarea{min-height:85px}
+.primary,.secondary,.danger{border-radius:12px;padding:12px;font-size:15px}.primary{width:100%;border:0;background:var(--accent);color:#07101f;font-weight:700}.secondary{border:1px solid var(--border);background:var(--card2);color:var(--text)}.danger{border:1px solid rgba(248,113,113,.4);background:transparent;color:var(--danger)}
+.check{display:flex;gap:10px;align-items:center;background:#0f1528;border:1px solid var(--border);padding:11px;border-radius:12px;margin:8px 0}.check input{width:auto;transform:scale(1.2)}
+.exercise{background:#0f1528;border:1px solid var(--border);border-radius:14px;padding:12px;margin-bottom:10px}.setrow{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:7px;margin:8px 0}.setrow input{padding:8px;font-size:14px}
+.hist{display:grid;grid-template-columns:78px 1fr auto;gap:9px;align-items:center;border-bottom:1px solid var(--border);padding:10px 0}.badge{font-size:12px;border:1px solid rgba(96,165,250,.3);color:#bfdbfe;background:rgba(96,165,250,.12);border-radius:999px;padding:5px 8px}
+.note{border-left:3px solid var(--accent);background:rgba(96,165,250,.08);padding:11px;border-radius:9px;color:#dbeafe;font-size:14px}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div><div class="muted">26-Day Cut & Recomp</div><h1>Project August</h1><div id="date" class="muted"></div></div><div class="count"><strong id="days">0</strong><span class="muted">days to Aug 13</span></div></header>
+<nav class="tabs">
+<button class="active" data-tab="today">Today</button><button data-tab="workout">Workout</button><button data-tab="nutrition">Nutrition</button><button data-tab="progress">Progress</button><button data-tab="history">History</button>
+</nav>
+
+<section id="today" class="tab active">
+<div class="grid two">
+<div class="card"><div class="muted">Daily score</div><div id="score" class="score">0%</div><div id="scoreText" class="small"></div></div>
+<div class="card"><div class="muted">Current streak</div><div id="streak" class="score">0</div><div class="small">days at 75%+</div></div>
+</div>
+<div class="card"><h2>Daily targets</h2>
+<div class="metric"><span>Protein</span><strong><span id="pNow">0</span>/220g</strong></div><div class="bar"><div id="pBar"></div></div>
+<div class="metric"><span>Water</span><strong><span id="wNow">0</span>/128 oz</strong></div><div class="bar"><div id="wBar"></div></div>
+<div class="metric"><span>Steps</span><strong><span id="sNow">0</span>/10,000</strong></div><div class="bar"><div id="sBar"></div></div>
+<div class="metric"><span>Cardio</span><strong><span id="cNow">0</span>/30 min</strong></div><div class="bar"><div id="cBar"></div></div>
+</div>
+<div class="card"><h2>Non-negotiables</h2><div id="habits"></div></div>
+<div class="card"><h2>Quick entry</h2><div class="grid two">
+<div><label>Protein (g)</label><input id="qp" type="number"></div><div><label>Water (oz)</label><input id="qw" type="number"></div>
+<div><label>Steps</label><input id="qs" type="number"></div><div><label>Cardio (min)</label><input id="qc" type="number"></div>
+</div><button id="saveQuick" class="primary" style="margin-top:12px">Save today's numbers</button></div>
+</section>
+
+<section id="workout" class="tab"><div class="card"><h2 id="workoutTitle"></h2><div id="workoutFocus" class="muted"></div><div id="exercises" style="margin-top:12px"></div><button id="workoutDone" class="primary">Mark workout complete</button></div></section>
+
+<section id="nutrition" class="tab">
+<div class="card"><h2>Nutrition log</h2><div class="grid two">
+<div><label>Calories</label><input id="calories" type="number"></div><div><label>Protein (g)</label><input id="protein" type="number"></div>
+<div><label>Carbs (g)</label><input id="carbs" type="number"></div><div><label>Fat (g)</label><input id="fat" type="number"></div>
+</div><label style="margin-top:12px">Meals / notes</label><textarea id="mealNotes"></textarea><button id="saveNutrition" class="primary" style="margin-top:12px">Save nutrition</button></div>
+<div class="card"><div class="note">Target 200–220g protein. Keep calories in a controlled deficit, put most carbs around training, and keep sodium and water consistent.</div></div>
+</section>
+
+<section id="progress" class="tab">
+<div class="card"><h2>Body check-in</h2><div class="grid two">
+<div><label>Weight (lb)</label><input id="weight" type="number" step=".1"></div><div><label>Waist (in)</label><input id="waist" type="number" step=".1"></div>
+<div><label>Chest (in)</label><input id="chest" type="number" step=".1"></div><div><label>Arm (in)</label><input id="arm" type="number" step=".1"></div>
+</div><label style="margin-top:12px">Notes</label><textarea id="progressNotes"></textarea><button id="saveProgress" class="primary" style="margin-top:12px">Save check-in</button></div>
+<div class="card"><h2>Readiness</h2><div class="grid two">
+<div><label>Sleep (hours)</label><input id="sleep" type="number" step=".1"></div><div><label>Energy (1–10)</label><input id="energy" type="number"></div>
+<div><label>Hunger (1–10)</label><input id="hunger" type="number"></div><div><label>Mood (1–10)</label><input id="mood" type="number"></div>
+</div><button id="saveReadiness" class="primary" style="margin-top:12px">Save readiness</button></div>
+</section>
+
+<section id="history" class="tab">
+<div class="card"><h2>Daily history</h2><div id="historyList"></div></div>
+<div class="card"><h2>Data tools</h2><button id="export" class="secondary">Export backup</button><button id="reset" class="danger">Reset all data</button></div>
+<div class="card"><div class="note">On iPhone: host the folder, open the URL in Safari, tap Share, then Add to Home Screen.</div></div>
+</section>
+</div>
+<script>
+const END=new Date('2026-08-13T00:00:00');
+const H=[['workoutDoneFlag','Lift complete'],['cardioDone','Cardio complete'],['stepsDone','10,000 steps'],['proteinDone','200g+ protein'],['waterDone','128 oz water'],['creatine','Creatine'],['noAlcohol','No alcohol'],['sleepDone','7.5+ hours sleep']];
+const W={
+0:['Recovery / Reset','Walk, mobility, stretching and meal prep.',[['Mobility flow','15 min'],['Easy walk','30–45 min']]],
+1:['Heavy Push','Chest, shoulders and triceps.',[['Bench Press','4 × 5–8'],['Incline Dumbbell Press','3 × 8–10'],['Seated Shoulder Press','3 × 8'],['Lateral Raise','4 × 15'],['Cable Fly','3 × 15'],['Triceps Pressdown','3 × 12'],['Overhead Rope Extension','3 × 12']]],
+2:['Pull','Back thickness, width, rear delts and biceps.',[['Deadlift or Rack Pull','3 × 5'],['Lat Pulldown','4 × 10'],['Chest-Supported Row','4 × 10'],['Rear-Delt Fly','4 × 15'],['Face Pull','3 × 15'],['Hammer Curl','3 × 12'],['Incline Curl','3 × 12']]],
+3:['Legs','Quads, hamstrings, glutes and calves.',[['Squat','4 × 6'],['Romanian Deadlift','4 × 8'],['Leg Press','3 × 12'],['Walking Lunge','3 × 10/leg'],['Leg Curl','3 × 12'],['Calf Raise','4 × 15']]],
+4:['Upper Hypertrophy','Moderate weight, shorter rests and strong pump.',[['Incline Press','4 × 10'],['Cable Row','4 × 10'],['Machine Chest Press','3 × 12'],['Neutral-Grip Pulldown','3 × 12'],['Lateral Raise','4 × 15'],['Rear-Delt Fly','3 × 15'],['Triceps + Curl Superset','3 × 12 each']]],
+5:['Back + Arms','Visual width, rear delts and arm volume.',[['Pull-Up or Pulldown','4 × 8–10'],['Single-Arm Row','4 × 10'],['Straight-Arm Pulldown','3 × 12'],['Rear-Delt Row','3 × 15'],['EZ-Bar Curl','4 × 10'],['Hammer Curl','3 × 12'],['Rope Pressdown','4 × 12'],['Dips','3 sets']]],
+6:['Shoulders + Arms + Abs','High-visual-impact work plus longer Zone 2 cardio.',[['Overhead Press','4 × 8'],['Lateral Raise','5 × 15'],['Rear-Delt Fly','4 × 15'],['Cable Curl','4 × 12'],['Overhead Triceps Extension','4 × 12'],['Hanging Leg Raise','4 × 12'],['Cable Crunch','4 × 15']]]
+};
+const k=()=>new Date().toISOString().slice(0,10), all=()=>JSON.parse(localStorage.getItem('pa')||'{}'), save=x=>localStorage.setItem('pa',JSON.stringify(x));
+function td(){let a=all(),x=k();a[x]=a[x]||{};return[a,x,a[x]]} const pc=(v,m)=>Math.max(0,Math.min(100,Math.round((+v||0)/m*100)));
+function render(){
+document.getElementById('date').textContent=new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'});
+document.getElementById('days').textContent=Math.max(0,Math.ceil((END-new Date())/86400000));
+let[a,x,d]=td(); d.proteinDone=(d.protein||0)>=200;d.waterDone=(d.water||0)>=128;d.stepsDone=(d.steps||0)>=10000;d.cardioDone=(d.cardio||0)>=30;d.sleepDone=(d.sleep||0)>=7.5;
+[['p',d.protein||0,220],['w',d.water||0,128],['s',d.steps||0,10000],['c',d.cardio||0,30]].forEach(([n,v,m])=>{document.getElementById(n+'Now').textContent=v;document.getElementById(n+'Bar').style.width=pc(v,m)+'%'});
+let hb=document.getElementById('habits');hb.innerHTML='';H.forEach(([id,label])=>{let l=document.createElement('label');l.className='check';l.innerHTML=`<input type="checkbox" data-id="${id}" ${d[id]?'checked':''}><span>${label}</span>`;hb.appendChild(l)});
+hb.querySelectorAll('input').forEach(el=>el.onchange=()=>{let[a,x,d]=td();d[el.dataset.id]=el.checked;a[x]=d;save(a);render()});
+let done=H.filter(([id])=>d[id]).length;d.score=Math.round(done/H.length*100);a[x]=d;save(a);score.textContent=d.score+'%';scoreText.textContent=done+' of '+H.length+' complete';
+let st=0;Object.keys(a).sort().reverse().some(dt=>{if((a[dt].score||0)>=75){st++;return false}return dt!==x});streak.textContent=st;
+fill();history();
+}
+function fill(){let[a,x,d]=td();['calories','protein','carbs','fat','mealNotes','weight','waist','chest','arm','progressNotes','sleep','energy','hunger','mood'].forEach(id=>{let e=document.getElementById(id);if(e)e.value=d[id]??''})}
+function fields(ids){let[a,x,d]=td();ids.forEach(id=>{let e=document.getElementById(id);d[id]=e.type==='number'?+(e.value||0):e.value});a[x]=d;save(a);render()}
+function workout(){let dday=new Date().getDay(),w=W[dday],[a,x,d]=td();d.sets=d.sets||{};workoutTitle.textContent=w[0];workoutFocus.textContent=w[1];exercises.innerHTML='';
+w[2].forEach(([name,target])=>{let box=document.createElement('div');box.className='exercise';box.innerHTML=`<h3>${name}</h3><div class="muted">${target}</div><div class="sets"></div><button class="secondary add">+ Add set</button>`;let s=d.sets[name]||[],cont=box.querySelector('.sets');
+s.forEach((v,i)=>{let r=document.createElement('div');r.className='setrow';r.innerHTML=`<input placeholder="lb" value="${v.w||''}"><input placeholder="reps" value="${v.r||''}"><input placeholder="RPE" value="${v.e||''}"><button class="danger">×</button>`;let ins=r.querySelectorAll('input');ins.forEach((q,j)=>q.onchange=()=>{let[a,x,d]=td(),z=d.sets[name][i];if(j===0)z.w=q.value;if(j===1)z.r=q.value;if(j===2)z.e=q.value;a[x]=d;save(a)});r.querySelector('button').onclick=()=>{let[a,x,d]=td();d.sets[name].splice(i,1);a[x]=d;save(a);workout()};cont.appendChild(r)});
+box.querySelector('.add').onclick=()=>{let[a,x,d]=td();d.sets=d.sets||{};d.sets[name]=d.sets[name]||[];d.sets[name].push({});a[x]=d;save(a);workout()};exercises.appendChild(box)})}
+function history(){let a=all(),list=historyList,dates=Object.keys(a).sort().reverse();list.innerHTML=dates.length?'':'<div class="muted">No entries yet.</div>';dates.forEach(dt=>{let d=a[dt],r=document.createElement('div');r.className='hist';r.innerHTML=`<div class="muted">${new Date(dt+'T12:00').toLocaleDateString(undefined,{month:'short',day:'numeric'})}</div><div><strong>${d.score||0}%</strong><div class="small">${d.protein||0}g protein · ${d.steps||0} steps · ${d.cardio||0} min</div></div><span class="badge">${d.workoutDoneFlag?'Lifted':'Open'}</span>`;list.appendChild(r)})}
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button,.tab').forEach(e=>e.classList.remove('active'));b.classList.add('active');document.getElementById(b.dataset.tab).classList.add('active');if(b.dataset.tab==='workout')workout();if(b.dataset.tab==='history')history()});
+saveQuick.onclick=()=>{let[a,x,d]=td();d.protein=+(qp.value||d.protein||0);d.water=+(qw.value||d.water||0);d.steps=+(qs.value||d.steps||0);d.cardio=+(qc.value||d.cardio||0);a[x]=d;save(a);render()};
+saveNutrition.onclick=()=>fields(['calories','protein','carbs','fat','mealNotes']);saveProgress.onclick=()=>fields(['weight','waist','chest','arm','progressNotes']);saveReadiness.onclick=()=>fields(['sleep','energy','hunger','mood']);
+workoutDone.onclick=()=>{let[a,x,d]=td();d.workoutDoneFlag=true;a[x]=d;save(a);render();alert('Workout marked complete.')};
+export.onclick=()=>{let b=new Blob([JSON.stringify(all(),null,2)],{type:'application/json'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download='project-august-backup.json';a.click();URL.revokeObjectURL(u)};
+reset.onclick=()=>{if(confirm('Delete all Project August data?')){localStorage.removeItem('pa');location.reload()}};
+render();workout();if('serviceWorker'in navigator)navigator.serviceWorker.register('service-worker.js').catch(()=>{});
+</script>
+</body></html>
