@@ -115,7 +115,7 @@ document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.que
 saveQuick.onclick=()=>{let[a,x,d]=td();d.protein=+(qp.value||d.protein||0);d.water=+(qw.value||d.water||0);d.steps=+(qs.value||d.steps||0);d.cardio=+(qc.value||d.cardio||0);a[x]=d;save(a);render()};
 saveNutrition.onclick=()=>fields(['calories','protein','carbs','fat','mealNotes']);saveProgress.onclick=()=>fields(['weight','waist','chest','arm','progressNotes']);saveReadiness.onclick=()=>fields(['sleep','energy','hunger','mood']);
 workoutDone.onclick=()=>{let[a,x,d]=td();d.workoutDoneFlag=true;a[x]=d;save(a);render();alert('Workout marked complete.')};
-export.onclick=()=>{let b=new Blob([JSON.stringify(all(),null,2)],{type:'application/json'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download='project-august-backup.json';a.click();URL.revokeObjectURL(u)};
+document.getElementById('export').onclick=()=>{let b=new Blob([JSON.stringify(all(),null,2)],{type:'application/json'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download='project-august-backup.json';a.click();URL.revokeObjectURL(u)};
 reset.onclick=()=>{if(confirm('Delete all Project August data?')){localStorage.removeItem('pa');location.reload()}};
 render();workout();if('serviceWorker'in navigator)navigator.serviceWorker.register('service-worker.js').catch(()=>{});
 </script>
